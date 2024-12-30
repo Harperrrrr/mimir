@@ -97,7 +97,7 @@ class Model(nn.Module):
                     labels = labels.unsqueeze(0)
             else:
                 tokenized = self.tokenizer(text, return_tensors="pt")
-                labels = tokenized.input_ids
+                labels = tokenized.input_ids    # labels实际上就是这个序列里的token(s) id
 
             target_token_log_prob = []
             all_token_log_prob = []
@@ -109,12 +109,12 @@ class Model(nn.Module):
                 target_ids = input_ids.clone()
                 target_ids[:, :-trg_len] = -100
 
-                logits = self.model(input_ids, labels=target_ids).logits
+                logits = self.model(input_ids, labels=target_ids).logits    # 真正有用的是模型输出的概率分布，而不是具体的next token
                 if no_grads:
                     logits = logits.cpu()
                 shift_logits = logits[..., :-1, :].contiguous()
                 log_probabilities = torch.nn.functional.log_softmax(shift_logits, dim=-1)
-                shift_labels = target_ids[..., 1:]
+                shift_labels = target_ids[..., 1:]      # 去掉第一个token id，因为它是第一个xs
                 if no_grads:
                     shift_labels = shift_labels.cpu()
                 shift_labels = shift_labels.contiguous()
@@ -125,11 +125,11 @@ class Model(nn.Module):
 
                 for i, token_id in enumerate(labels_processed):
                     if token_id != -100:
-                        log_probability = log_probabilities[0, i, token_id]
+                        log_probability = log_probabilities[0, i, token_id]     # 第i个概率分布里找target token
                         if no_grads:
                             log_probability = log_probability.item()
-                        target_token_log_prob.append(log_probability)
-                        all_token_log_prob.append(log_probabilities[0, i])
+                        target_token_log_prob.append(log_probability)           # 只包含target token
+                        all_token_log_prob.append(log_probabilities[0, i])      # 包含所有token
             
             # Should be equal to # of tokens - 1 to account for shift
             assert len(target_token_log_prob) == labels.size(1) - 1

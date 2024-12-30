@@ -122,7 +122,7 @@ def get_mia_scores(
                 texts[idx][: config.max_substrs]
                 if config.full_doc
                 else [texts[idx]]
-            )
+            )       # sample就是一整条数据
 
             # This will be a list of integers if pretokenized
             sample_information["sample"] = sample

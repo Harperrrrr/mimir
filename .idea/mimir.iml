@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_1.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_10.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_11.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_12.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_13.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_14.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_15.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_16.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_17.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_18.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_19.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_2.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_20.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_3.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_4.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_5.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_6.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_7.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_8.pt" />
+      <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_9.pt" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.9 (hello)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="PyDocumentationSettings">
+    <option name="format" value="PLAIN" />
+    <option name="myDocStringFormat" value="Plain" />
+  </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/templates" />
+      </list>
+    </option>
+  </component>
+  <component name="TestRunnerService">
+    <option name="PROJECT_TEST_RUNNER" value="py.test" />
+  </component>
+</module>

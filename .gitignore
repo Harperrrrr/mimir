@@ -65,3 +65,5 @@ DEBUG/*
 
 # Ignore resources for edited members
 edit_distance_members
+
+mimir/perturbation_models/*
