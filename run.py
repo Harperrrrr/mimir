@@ -14,6 +14,7 @@ from typing import List, Dict
 from simple_parsing import ArgumentParser
 from pathlib import Path
 
+from mimir.attacks.perturbation import PerturbationAttack
 from mimir.config import (
     ExperimentConfig,
     EnvironmentConfig,
@@ -38,6 +39,7 @@ from mimir.attacks.attack_utils import (
 def get_attackers(
     target_model,
     ref_models,
+    perturb_models,
     config: ExperimentConfig,
 ):
     # Look at all attacks, and attacks that we have implemented
@@ -55,7 +57,7 @@ def get_attackers(
     # Initialize attackers
     attackers = {}
     for attack in attacks:
-        if attack != AllAttacks.REFERENCE_BASED:
+        if attack != AllAttacks.REFERENCE_BASED and attack != AllAttacks.PERTURBATION_BASED:
             attackers[attack] = get_attacker(attack)(config, target_model)
 
     # Initialize reference-based attackers if specified
@@ -65,6 +67,11 @@ def get_attackers(
                 config, target_model, ref_model
             )
             attackers[f"{AllAttacks.REFERENCE_BASED}-{name.split('/')[-1]}"] = attacker
+
+    # Initialize perturbation-based attackers if specified
+    if perturb_models is not None:
+        attackers[AllAttacks.PERTURBATION_BASED] = get_attacker(AllAttacks.PERTURBATION_BASED)(config, target_model, perturb_models)
+
     return attackers
 
 
@@ -118,11 +125,12 @@ def get_mia_scores(
         # For each entry in batch
         for idx in range(len(texts)):
             sample_information = defaultdict(list)
+            # sample就是一整条数据
             sample = (
                 texts[idx][: config.max_substrs]
                 if config.full_doc
                 else [texts[idx]]
-            )       # sample就是一整条数据
+            )
 
             # This will be a list of integers if pretokenized
             sample_information["sample"] = sample
@@ -157,7 +165,7 @@ def get_mia_scores(
                 # For each attack
                 for attack, attacker in attackers_dict.items():
                     # LOSS already added above, Reference handled later
-                    if attack.startswith(AllAttacks.REFERENCE_BASED) or attack == AllAttacks.LOSS:
+                    if attack.startswith(AllAttacks.REFERENCE_BASED) or attack == AllAttacks.PERTURBATION_BASED or attack == AllAttacks.LOSS:
                         continue
 
                     if attack == AllAttacks.RECALL:
@@ -266,6 +274,7 @@ def get_mia_scores(
             # Update collected scores for each sample with ref-based attack scores
             for r in tqdm(results, desc="Ref scores"):
                 ref_model_scores = []
+                # 处理每一个substr
                 for i, s in enumerate(r["sample"]):
                     if config.pretokenized:
                         s = r["detokenized"][i]
@@ -274,9 +283,35 @@ def get_mia_scores(
                     ref_model_scores.append(score)
                 r[ref_key].extend(ref_model_scores)
 
+            # attack的时候会load
             attacker.unload()
     else:
         print("No reference models specified, skipping Reference-based attacks")
+
+    # Perform perturbation-based attack
+    if AllAttacks.PERTURBATION_BASED in attackers_dict.keys():
+        attacker = attackers_dict.get(AllAttacks.PERTURBATION_BASED, None)
+        if attacker is None:
+            print("Intended to implement perturbation based attacks but no attackers specified")
+            exit(1)
+        if not isinstance(attacker, PerturbationAttack):
+            print("Intended to implement perturbation based attacks but got a wrong attacker")
+            exit(1)
+
+        # Update collected scores for each sample with perturb-based attack scores
+        for r in tqdm(results, desc="Ref scores"):
+            perturb_model_scores = []
+            # 处理每一个substr
+            for i, s in enumerate(r["sample"]):
+                if config.pretokenized:
+                    s = r["detokenized"][i]
+                score = attacker.attack(s, probs=None,
+                                        loss=r[AllAttacks.LOSS][i])
+                perturb_model_scores.append(score)
+            r[AllAttacks.PERTURBATION_BASED].extend(perturb_model_scores)
+
+        # attack的时候会load
+        attacker.unload()
 
     # Rearrange the nesting of the results dict and calculated aggregated score for sample
     # attack -> member/nonmember -> list of scores
@@ -287,6 +322,7 @@ def get_mia_scores(
         for attack, scores in r.items():
             if attack != "sample" and attack != "detokenized":
                 # TODO: Is there a reason for the np.min here?
+                # I think I need to change it for perturbation-based attacks
                 predictions[attack].append(np.min(scores))
 
     return predictions, samples
@@ -299,6 +335,7 @@ def compute_metrics_from_scores(
         samples_nonmember: List,
         n_samples: int):
 
+    # preds_(no)member是一个 { attack : sample score list } 字典
     attack_keys = list(preds_member.keys())
     if attack_keys != list(preds_nonmember.keys()):
         raise ValueError("Mismatched attack keys for member/nonmember predictions")
@@ -525,7 +562,7 @@ def main(config: ExperimentConfig):
         }
 
     # Prepare attackers
-    attackers_dict = get_attackers(base_model, ref_models, config)
+    attackers_dict = get_attackers(base_model, ref_models, perturb_models, config)
 
     # Load neighborhood attack model, only if we are doing the neighborhood attack AND generating neighbors
     mask_model = None

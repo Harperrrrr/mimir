@@ -2,6 +2,7 @@ from mimir.attacks.all_attacks import AllAttacks
 
 from mimir.attacks.loss import LOSSAttack
 from mimir.attacks.reference import ReferenceAttack
+from mimir.attacks.perturbation import PerturbationAttack
 from mimir.attacks.zlib import ZLIBAttack
 from mimir.attacks.min_k import MinKProbAttack
 from mimir.attacks.min_k_plus_plus import MinKPlusPlusAttack
@@ -16,6 +17,7 @@ def get_attacker(attack: str):
     mapping = {
         AllAttacks.LOSS: LOSSAttack,
         AllAttacks.REFERENCE_BASED: ReferenceAttack,
+        AllAttacks.PERTURBATION_BASED: PerturbationAttack,
         AllAttacks.ZLIB: ZLIBAttack,
         AllAttacks.MIN_K: MinKProbAttack,
         AllAttacks.MIN_K_PLUS_PLUS: MinKPlusPlusAttack,

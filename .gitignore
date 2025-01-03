@@ -69,3 +69,5 @@ edit_distance_members
 mimir/perturbation_models/*
 
 ./.idea
+
+*.zip

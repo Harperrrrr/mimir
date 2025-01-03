@@ -3,7 +3,9 @@
 """
 
 from enum import Enum
-from mimir.models import Model
+from typing import Set
+
+from mimir.models import Model, PerturbationModel
 
 
 # Attack definitions
@@ -23,10 +25,11 @@ class AllAttacks(str, Enum):
 
 # Base attack class
 class Attack:
-    def __init__(self, config, target_model: Model, ref_model: Model = None, is_blackbox: bool = True):
+    def __init__(self, config, target_model: Model, ref_model: Model = None, perturb_models: Set[PerturbationModel] = None, is_blackbox: bool = True):
         self.config = config
         self.target_model = target_model
         self.ref_model = ref_model
+        self.perturb_models = perturb_models
         self.is_loaded = False
         self.is_blackbox = is_blackbox
 
@@ -38,9 +41,19 @@ class Attack:
             self.ref_model.load()
             self.is_loaded = True
 
+        if self.perturb_models is not None:
+            for model in self.perturb_models:
+                model.load()
+            self.is_loaded = True
+
     def unload(self):
         if self.ref_model is not None:
             self.ref_model.unload()
+            self.is_loaded = False
+
+        if self.perturb_models is not None:
+            for model in self.perturb_models:
+                model.unload()
             self.is_loaded = False
 
     def _attack(self, document, probs, tokens=None, **kwargs):

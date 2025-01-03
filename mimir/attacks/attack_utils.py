@@ -82,11 +82,13 @@ def get_roc_metrics(
     # While roc_auc is unaffected by which class we consider
     # positive/negative, the TPR@lowFPR calculation is.
     # Make sure the members are positive class (larger values, so negate the raw MIA scores)
+    # 使正样本（成员样本）的score值更大
     total_preds = np.array(total_preds) * -1
     # Assign label '0' to members for computation, since sklearn
-    # expectes label '0' data to have lower values to get assigned that label
+    # expects label '0' data to have lower values to get assigned that label
     # which is true for our attacks (lower loss for members, e.g.)
     total_labels = [1] * len(preds_member_) + [0] * len(preds_nonmember_)
+    # 有了每个样本的分数和标签，就能画出roc曲线
     fpr, tpr, thresholds = roc_curve(total_labels, total_preds)
 
     roc_auc = auc(fpr, tpr)

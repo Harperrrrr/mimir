@@ -299,20 +299,6 @@ class PerturbationModel(Model):
             model_kwargs=base_model_kwargs)
         self.load_model_properties()
 
-    def load(self):
-        """
-        Load reference model noto GPU(s)
-        """
-        if "llama" not in self.name and "alpaca" not in self.name:
-            super().load()
-
-    def unload(self):
-        """
-        Unload reference model from GPU(s)
-        """
-        if "llama" not in self.name and "alpaca" not in self.name:
-            super().unload()
-
 
 class QuantileReferenceModel(Model):
     """
