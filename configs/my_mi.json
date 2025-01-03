@@ -1,5 +1,5 @@
 {
-    "experiment_name": "neo125_github_experiment",
+    "experiment_name": "neo125_github_experiment_ref",
     "base_model": "EleutherAI/gpt-neo-125m",
     "dataset_member": "the_pile",
     "dataset_nonmember": "the_pile",
@@ -10,22 +10,11 @@
     "output_name": "unified_mia",
     "specific_source": "Github_ngram_13_<0.8_truncated",
     "n_samples": 1000,
-    "blackbox_attacks": ["loss", "ref", "min_k", "zlib", "ne"],
+    "blackbox_attacks": ["loss", "ref"],
     "ref_config": {
         "models": [
             "stabilityai/stablelm-base-alpha-3b-v2"
         ]
-    },
-    "neighborhood_config": {
-        "model": "bert",
-        "n_perturbation_list": [
-            25
-        ],
-        "pct_words_masked": 0.3,
-        "span_length": 2,
-        "dump_cache": false,
-        "load_from_cache": true,
-        "neighbor_strategy": "random"
     },
     "env_config": {
         "results": "results_new",

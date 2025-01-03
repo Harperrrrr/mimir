@@ -24,7 +24,7 @@
       <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_8.pt" />
       <excludeFolder url="file://$MODULE_DIR$/mimir/perturbation_models/pythia-70m-deduped_0.0005_9.pt" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9 (hello)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="mimir" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
