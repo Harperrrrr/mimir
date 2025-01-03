@@ -5,7 +5,7 @@
 from dataclasses import dataclass
 from typing import Optional, List
 from simple_parsing.helpers import Serializable, field
-from mimir.utils import get_cache_path, get_data_source
+from mimir.utils import get_cache_path, get_data_source, get_perturb_storage_path
 
 
 @dataclass
@@ -15,6 +15,19 @@ class ReferenceConfig(Serializable):
     """
     models: List[str]
     """Reference model names"""
+
+
+@dataclass
+class PerturbationConfig(Serializable):
+    """
+    Config for perturbation attack.
+    """
+    model: str
+    """Perturbation model name"""
+    sigma: Optional[float] = 0.0005
+    """noise size"""
+    n: Optional[int] = 20
+    """Number of perturbations"""
 
 
 @dataclass
@@ -74,6 +87,8 @@ class EnvironmentConfig(Serializable):
     """
     cache_dir: Optional[str] = None
     """Path to cache directory"""
+    perturb_storage_dir: Optional[str] = None
+    """Path to perturb models storage directory"""
     data_source: Optional[str] = None
     """Path where data is stored"""
     device: Optional[str] = 'cuda:0'
@@ -97,6 +112,8 @@ class EnvironmentConfig(Serializable):
             self.cache_dir = get_cache_path()
         if self.data_source is None:
             self.data_source = get_data_source()
+        if self.perturb_storage_dir is None:
+            self.perturb_storage_dir = get_perturb_storage_path()
 
 
 @dataclass
@@ -201,6 +218,8 @@ class ExperimentConfig(Serializable):
     """Random seed"""
     ref_config: Optional[ReferenceConfig] = None
     """Reference model config"""
+    perturb_config: Optional[PerturbationConfig] = None
+    """Perturbation model config"""
     recall_config: Optional[ReCaLLConfig] = None
     """ReCaLL attack config"""
     neighborhood_config: Optional[NeighborhoodConfig] = None

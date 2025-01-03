@@ -10,6 +10,7 @@ from mimir.models import Model
 class AllAttacks(str, Enum):
     LOSS = "loss"
     REFERENCE_BASED = "ref"
+    PERTURBATION_BASED = "perturb"
     ZLIB = "zlib"
     MIN_K = "min_k"
     MIN_K_PLUS_PLUS = "min_k++"

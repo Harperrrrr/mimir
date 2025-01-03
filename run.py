@@ -19,13 +19,13 @@ from mimir.config import (
     EnvironmentConfig,
     NeighborhoodConfig,
     ReferenceConfig,
-    OpenAIConfig, 
-    ReCaLLConfig
+    OpenAIConfig,
+    ReCaLLConfig, PerturbationConfig
 )
 import mimir.data_utils as data_utils
 import mimir.plot_utils as plot_utils
 from mimir.utils import fix_seed
-from mimir.models import LanguageModel, ReferenceModel, OpenAI_APIModel
+from mimir.models import LanguageModel, ReferenceModel, OpenAI_APIModel, PerturbationModel
 from mimir.attacks.all_attacks import AllAttacks, Attack
 from mimir.attacks.utils import get_attacker
 from mimir.attacks.attack_utils import (
@@ -443,6 +443,7 @@ def main(config: ExperimentConfig):
     env_config: EnvironmentConfig = config.env_config
     neigh_config: NeighborhoodConfig = config.neighborhood_config
     ref_config: ReferenceConfig = config.ref_config
+    perturb_config: PerturbationConfig = config.perturb_config
     openai_config: OpenAIConfig = config.openai_config
     recall_config: ReCaLLConfig = config.recall_config
 
@@ -511,6 +512,16 @@ def main(config: ExperimentConfig):
     ):
         ref_models = {
             model: ReferenceModel(config, model) for model in ref_config.models
+        }
+
+    # perturbation model if we are doing the perturb-based attack
+    perturb_models = None
+    if(
+        perturb_config is not None
+        and AllAttacks.PERTURBATION_BASED in config.blackbox_attacks
+    ):
+        perturb_models = {
+            PerturbationModel(config, perturb_config.model, perturb_config.sigma, idx) for idx in range(1, perturb_config.n + 1)
         }
 
     # Prepare attackers

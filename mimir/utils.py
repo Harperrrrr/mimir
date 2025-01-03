@@ -15,7 +15,7 @@ import numpy as np
 # Read environment variables
 CACHE_PATH = os.environ.get('MIMIR_CACHE_PATH', None)
 DATA_SOURCE = os.environ.get('MIMIR_DATA_SOURCE', None)
-
+PERTURB_STORAGE_PATH = os.environ.get('MIMIR_PERTURB_STORAGE_PATH', None)
 
 def fix_seed(seed: int = 0):
     """
@@ -55,3 +55,8 @@ def get_data_source():
     if DATA_SOURCE is None:
         raise ValueError('MIMIR_DATA_SOURCE environment variable not set')
     return DATA_SOURCE
+
+def get_perturb_storage_path():
+    if PERTURB_STORAGE_PATH is None:
+        raise ValueError('MIMIR_PERTURB_STORAGE_PATH environment variable not set')
+    return PERTURB_STORAGE_PATH

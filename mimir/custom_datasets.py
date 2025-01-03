@@ -71,6 +71,7 @@ def load_cached(cache_dir,
                     split = split.rsplit("_truncated", 1)[0]
 
                 # Load corresponding dataset
+                # I think I can change the dataset here
                 ds = datasets.load_dataset("iamgroot42/mimir", name=source, split=split)
                 data = ds[data_split]
                 # Check if the number of samples is correct

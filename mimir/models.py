@@ -33,6 +33,7 @@ class Model(nn.Module):
         self.name = None
         self.kwargs = kwargs
         self.cache_dir = self.config.env_config.cache_dir
+        self.perturb_storage_dir = self.config.env_config.perturb_storage_dir
 
     def to(self, device):
         """
@@ -171,7 +172,10 @@ class Model(nn.Module):
         if self.config.openai_config is None:
             print(f'Loading BASE model {self.name}...')
             device_map = self.device_map # if self.device_map else 'cpu'
-            if "silo" in self.name or "balanced" in self.name:
+            if isinstance(self, PerturbationModel):
+                # name, sigma, idx
+                model = transformers.AutoModelForCausalLM.from_pretrained(f'{self.perturb_storage_dir}/{self.name.split("/")[-1]}_{self.sigma}_{self.idx}.pt')
+            elif "silo" in self.name or "balanced" in self.name:
                 from utils.transformers.model import OpenLMforCausalLM
                 model = OpenLMforCausalLM.from_pretrained(
                     self.name, **model_kwargs, device_map=self.device, cache_dir=self.cache_dir)
@@ -256,6 +260,41 @@ class ReferenceModel(Model):
             split = self.name.split(':')
             self.name = split[0]
             base_model_kwargs.update(dict(revision=split[-1]))
+        self.model, self.tokenizer = self.load_base_model_and_tokenizer(
+            model_kwargs=base_model_kwargs)
+        self.load_model_properties()
+
+    def load(self):
+        """
+        Load reference model noto GPU(s)
+        """
+        if "llama" not in self.name and "alpaca" not in self.name:
+            super().load()
+
+    def unload(self):
+        """
+        Unload reference model from GPU(s)
+        """
+        if "llama" not in self.name and "alpaca" not in self.name:
+            super().unload()
+
+
+class PerturbationModel(Model):
+    """
+            Wrapper for perturbation model
+        """
+
+    def __init__(self, config: ExperimentConfig, name: str, sigma: float, idx: int):
+        super().__init__(config)
+        self.device = self.config.env_config.device_aux
+        self.name = name
+        self.sigma = sigma
+        self.idx = idx
+        base_model_kwargs = {'revision': 'main', 'name': str, 'sigma': sigma, 'idx': idx}
+        if 'gpt-j' in self.name or 'neox' in self.name or 'llama' in self.name or 'alpaca' in self.name:
+            base_model_kwargs.update(dict(torch_dtype=torch.float16))
+        if 'gpt-j' in self.name:
+            base_model_kwargs.update(dict(revision='float16'))
         self.model, self.tokenizer = self.load_base_model_and_tokenizer(
             model_kwargs=base_model_kwargs)
         self.load_model_properties()
